@@ -1,9 +1,10 @@
 const webcamElement = document.getElementById('webcam');
-const classifier1 = knnClassifier.create();
-const classifier2 = knnClassifier.create();
+const imageClassifier1 = knnClassifier.create();
+const imageClassifier2 = knnClassifier.create();
+const classifier3 = knnClassifier.create();
 let net;
-var buttonDown;
-var countOfClassImages = [0, 0, 0, 0, 0, 0, 0, 0];
+let buttonDown;
+let countOfClassImages = [0, 0, 0, 0, 0, 0, 0, 0];
 
 const imagesPerSecond = 10;
 const DELAY_TIME = 1000 / imagesPerSecond;
@@ -89,8 +90,8 @@ async function app() {
   const addExample = (classId) => {
     countOfClassImages[classId]++; // for each image captured keep count so we can display
     const activation = net.infer(webcamElement, 'conv_preds');
-    if(classId<4){ console.log('added to classifier1');classifier1.addExample(activation, classId); } // Pass the intermediate activation to the classifier.
-    else { console.log('added to classifier2');classifier2.addExample(activation, classId-4); } // Pass the intermediate activation to the classifier.
+    if(classId<4){ console.log('added to classifier1');imageClassifier1.addExample(activation, classId); } // Pass the intermediate activation to the classifier.
+    else { console.log('added to classifier2');imageClassifier2.addExample(activation, classId-4); } // Pass the intermediate activation to the classifier.
     updateCountOfClassExamples();
     // console.log(`added ${classId} ${activation}`);
   };
@@ -103,16 +104,18 @@ async function app() {
       listenersAdded = true;
     }
     const webcamActivation = net.infer(webcamElement, 'conv_preds'); // Get the activation from mobilenet from the webcam.
-    updateClassifierConsole(classifier1, '1', webcamActivation);
-    updateClassifierConsole(classifier2, '2', webcamActivation);
+    updateClassifierConsole(imageClassifier1, '1', webcamActivation);
+    updateClassifierConsole(imageClassifier2, '2', webcamActivation);
     updateButtonNames();
     await tf.nextFrame();
   }
 }
 
 function save() {
-   let dataset = classifier.getClassifierDataset()
-   var datasetObj = Object.keys(dataset).map((key) => {
+  let dataset1 = imageClassifier1.getClassifierDataset()
+  let dataset2 = imageClassifier2.getClassifierDataset() // TODO: ADD
+  let dataset3 = classifier3.getClassifierDataset() // TODO: ADD
+  let datasetObj = Object.keys(dataset1).map((key) => {
      let data = dataset[key].dataSync();
      // use Array.from() so when JSON.stringify() it covert to an array string e.g [0.1,-0.2...]
      // instead of object e.g {0:"0.1", 1:"-0.2"...}
@@ -142,8 +145,8 @@ function save() {
         txt = "Select one or more files.";
       } else {
         console.log('has length');
-        var readerData;
-        var reader = new FileReader();
+        let readerData;
+        let reader = new FileReader();
         reader.onload = fileEvent => readerData = fileEvent.target.result;
         reader.readAsText(loadButton.files[0]);
         let dataset = readerData;
