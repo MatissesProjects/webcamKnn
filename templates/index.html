@@ -1,0 +1,30 @@
+<!-- templates/index.html -->
+<html>
+  <head>
+    <!-- Load the latest version of TensorFlow.js -->
+    <script src="https://unpkg.com/@tensorflow/tfjs"></script>
+    <script src="https://unpkg.com/@tensorflow-models/mobilenet"></script>
+    <script src="https://unpkg.com/@tensorflow-models/knn-classifier"></script>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+  </head>
+  <body>
+    <video autoplay playsinline muted id="webcam" width="224" height="224"></video>
+    <div id="TopLevelKnns" width=100%>
+      <div id="thereNotThere" style="width:350px; display: table-cell;">
+        {{ knnConsole(1) }}
+      </div>
+      <div id="dayNight" style="display:table-cell;">
+        {{ knnConsole(2) }}
+      </div>
+    </div>
+
+    <div id="saveLoadButtonPanel">
+      <button id="saveButton">Save</button>
+      <input type="file" id="loadButton"></input>
+      <a id="link" target="_blank" download="file.txt" hidden="true">Download</a>
+      <h1 id="randomTextFromFrontEndExample">{{message}}</h1>
+    </div>
+    <!-- Load index.js after the content of the page -->
+    <script src="../static/index.js"></script>
+  </body>
+</html>

@@ -1,0 +1,30 @@
+{% extends "index.html" %}
+{% macro console(consoleId) -%}
+  <div id="console{{consoleId}}">
+    <br>        prediction: undefined<br>
+    <br>        probability: undefined<br>
+  </div>
+{%- endmacro %}
+
+{% macro buttonPanel(buttonGroupNumber) -%}
+  <div id="buttonPanel">
+    <p>Add classes in order, A initilizes the classes</p>
+    {{ buttonNameLabelText('A', buttonGroupNumber) }}
+    {{ buttonNameLabelText('B', buttonGroupNumber) }}
+    {{ buttonNameLabelText('C', buttonGroupNumber) }}
+    {{ buttonNameLabelText('D', buttonGroupNumber) }}
+  </div>
+{%- endmacro %}
+
+{% macro knnConsole(consoleNumber) -%}
+  {{ console(consoleNumber) }}
+  {{ buttonPanel(consoleNumber ) }}
+{%- endmacro %}
+
+{% macro buttonNameLabelText(postfixLetter, buttonGroupNumber) -%}
+  <div id="buttonset{{buttonGroupNumber}}{{postfixLetter}}">
+    <input id="text{{buttonGroupNumber}}{{postfixLetter}}" size="5" value="{{postfixLetter}}"></input>
+    <button id="class{{buttonGroupNumber}}{{postfixLetter}}">Add {{postfixLetter}}</button>
+    <label id="label{{buttonGroupNumber}}{{postfixLetter}}"></label>
+  </div>
+{%- endmacro %}
