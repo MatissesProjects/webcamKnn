@@ -19,5 +19,5 @@ This is heavily based off of the teachable machine Google tool, however simplifi
 - [x] Add another KNN with a different set of classes
 - [ ] Add a third KNN with the input being the two previous KNN's
   - This will be the base for the overall solution
-- [ ] Migrate application to a flask service
+- [x] Migrate application to a flask service
   - This will allow us to serve the application on something like heroku easily in the future
