@@ -4,7 +4,9 @@ const imageClassifier2 = knnClassifier.create();
 const classifier3 = knnClassifier.create();
 let net;
 let buttonDown;
-let countOfClassImages = [0, 0, 0, 0, 0, 0, 0, 0];
+let countOfClassImages = [0, 0, 0, 0,
+                          0, 0, 0, 0,
+                          0, 0, 0, 0];
 
 const imagesPerSecond = 10;
 const DELAY_TIME = 1000 / imagesPerSecond;
@@ -37,7 +39,10 @@ async function updateClassifierConsole(classifier, consoleNumber, activation) {
       prediction: ${classNames[parseInt(result.label)]}\n
       probability: ${result.confidences[parseInt(result.label)]}
     `;
+    return [parseInt(result.label), result.confidences[parseInt(result.label)]]
+
   }
+  return []
 }
 
 function updateCountOfClassExamples() {
@@ -49,6 +54,10 @@ function updateCountOfClassExamples() {
   document.getElementById('label2B').innerText = countOfClassImages[5];
   document.getElementById('label2C').innerText = countOfClassImages[6];
   document.getElementById('label2D').innerText = countOfClassImages[7];
+  document.getElementById('label3A').innerText = countOfClassImages[8];
+  document.getElementById('label3B').innerText = countOfClassImages[9];
+  document.getElementById('label3C').innerText = countOfClassImages[10];
+  document.getElementById('label3D').innerText = countOfClassImages[11];
 }
 
 function updateButtonNames() {
@@ -60,6 +69,10 @@ function updateButtonNames() {
   document.getElementById('class2B').innerText = `Add ${document.getElementById('text2B').value}`;
   document.getElementById('class2C').innerText = `Add ${document.getElementById('text2C').value}`;
   document.getElementById('class2D').innerText = `Add ${document.getElementById('text2D').value}`;
+  document.getElementById('class3A').innerText = `Add ${document.getElementById('text3A').value}`;
+  document.getElementById('class3B').innerText = `Add ${document.getElementById('text3B').value}`;
+  document.getElementById('class3C').innerText = `Add ${document.getElementById('text3C').value}`;
+  document.getElementById('class3D').innerText = `Add ${document.getElementById('text3D').value}`;
 }
 
 function addClickListeners(addExample) { // While clicking a button, add an example every .1 second for that class.
@@ -77,6 +90,10 @@ function addClickListeners(addExample) { // While clicking a button, add an exam
   createListener('class2B', 5);
   createListener('class2C', 6);
   createListener('class2D', 7);
+  createListener('class3A', 8);
+  createListener('class3B', 9);
+  createListener('class3C', 10);
+  createListener('class3D', 11);
 }
 
 async function app() {
@@ -87,11 +104,16 @@ async function app() {
 
   await setupWebcam();
   // Reads an image from the webcam and associates it with a specific class index.
-  const addExample = (classId) => {
+  const addExample = async (classId) => {
     countOfClassImages[classId]++; // for each image captured keep count so we can display
     const activation = net.infer(webcamElement, 'conv_preds');
     if(classId<4){ console.log('added to classifier1');imageClassifier1.addExample(activation, classId); } // Pass the intermediate activation to the classifier.
-    else { console.log('added to classifier2');imageClassifier2.addExample(activation, classId-4); } // Pass the intermediate activation to the classifier.
+    if(classId>=4 && classId<8) { console.log('added to classifier2');imageClassifier2.addExample(activation, classId-4); } // Pass the intermediate activation to the classifier.
+    if(classId>=8) {
+      results1 = await updateClassifierConsole(imageClassifier1, '1', activation);
+      results2 = await updateClassifierConsole(imageClassifier2, '2', activation);
+      classifier3.addExample(tf.tensor([results1, results2]), classId-8);
+    }
     updateCountOfClassExamples();
     // console.log(`added ${classId} ${activation}`);
   };
@@ -104,8 +126,9 @@ async function app() {
       listenersAdded = true;
     }
     const webcamActivation = net.infer(webcamElement, 'conv_preds'); // Get the activation from mobilenet from the webcam.
-    updateClassifierConsole(imageClassifier1, '1', webcamActivation);
-    updateClassifierConsole(imageClassifier2, '2', webcamActivation);
+    results1 = await updateClassifierConsole(imageClassifier1, '1', webcamActivation);
+    results2 = await updateClassifierConsole(imageClassifier2, '2', webcamActivation);
+    updateClassifierConsole(classifier3, '3', tf.tensor([results1, results2]));
     updateButtonNames();
     await tf.nextFrame();
   }
