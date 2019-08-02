@@ -33,8 +33,8 @@ async function setupWebcam() {
 async function updateClassifierConsole(classifier, consoleNumber, activation) {
   if (classifier.getNumClasses() > 0) {
     const result = await classifier.predictClass(activation);
-    const classNames = [document.getElementById(`text${consoleNumber}A`).value, document.getElementById(`text${consoleNumber}B`).value,
-                        document.getElementById(`text${consoleNumber}C`).value, document.getElementById(`text${consoleNumber}D`).value];
+    const classNames = [document.getElementById(`text${consoleNumber}-1`).value, document.getElementById(`text${consoleNumber}-2`).value,
+                        document.getElementById(`text${consoleNumber}-3`).value, document.getElementById(`text${consoleNumber}-4`).value];
     document.getElementById(`console${consoleNumber}`).innerText = `
       prediction: ${classNames[parseInt(result.label)]}\n
       probability: ${result.confidences[parseInt(result.label)]}
@@ -46,33 +46,33 @@ async function updateClassifierConsole(classifier, consoleNumber, activation) {
 }
 
 function updateCountOfClassExamples() {
-  document.getElementById('label1A').innerText = countOfClassImages[0];
-  document.getElementById('label1B').innerText = countOfClassImages[1];
-  document.getElementById('label1C').innerText = countOfClassImages[2];
-  document.getElementById('label1D').innerText = countOfClassImages[3];
-  document.getElementById('label2A').innerText = countOfClassImages[4];
-  document.getElementById('label2B').innerText = countOfClassImages[5];
-  document.getElementById('label2C').innerText = countOfClassImages[6];
-  document.getElementById('label2D').innerText = countOfClassImages[7];
-  document.getElementById('label3A').innerText = countOfClassImages[8];
-  document.getElementById('label3B').innerText = countOfClassImages[9];
-  document.getElementById('label3C').innerText = countOfClassImages[10];
-  document.getElementById('label3D').innerText = countOfClassImages[11];
+  document.getElementById('label1-1').innerText = countOfClassImages[0];
+  document.getElementById('label1-2').innerText = countOfClassImages[1];
+  document.getElementById('label1-3').innerText = countOfClassImages[2];
+  document.getElementById('label1-4').innerText = countOfClassImages[3];
+  document.getElementById('label2-1').innerText = countOfClassImages[4];
+  document.getElementById('label2-2').innerText = countOfClassImages[5];
+  document.getElementById('label2-3').innerText = countOfClassImages[6];
+  document.getElementById('label2-4').innerText = countOfClassImages[7];
+  document.getElementById('label3-1').innerText = countOfClassImages[8];
+  document.getElementById('label3-2').innerText = countOfClassImages[9];
+  document.getElementById('label3-3').innerText = countOfClassImages[10];
+  document.getElementById('label3-4').innerText = countOfClassImages[11];
 }
 
 function updateButtonNames() {
-  document.getElementById('class1A').innerText = `Add ${document.getElementById('text1A').value}`;
-  document.getElementById('class1B').innerText = `Add ${document.getElementById('text1B').value}`;
-  document.getElementById('class1C').innerText = `Add ${document.getElementById('text1C').value}`;
-  document.getElementById('class1D').innerText = `Add ${document.getElementById('text1D').value}`;
-  document.getElementById('class2A').innerText = `Add ${document.getElementById('text2A').value}`;
-  document.getElementById('class2B').innerText = `Add ${document.getElementById('text2B').value}`;
-  document.getElementById('class2C').innerText = `Add ${document.getElementById('text2C').value}`;
-  document.getElementById('class2D').innerText = `Add ${document.getElementById('text2D').value}`;
-  document.getElementById('class3A').innerText = `Add ${document.getElementById('text3A').value}`;
-  document.getElementById('class3B').innerText = `Add ${document.getElementById('text3B').value}`;
-  document.getElementById('class3C').innerText = `Add ${document.getElementById('text3C').value}`;
-  document.getElementById('class3D').innerText = `Add ${document.getElementById('text3D').value}`;
+  document.getElementById('class1-1').innerText = `Add ${document.getElementById('text1-1').value}`;
+  document.getElementById('class1-2').innerText = `Add ${document.getElementById('text1-2').value}`;
+  document.getElementById('class1-3').innerText = `Add ${document.getElementById('text1-3').value}`;
+  document.getElementById('class1-4').innerText = `Add ${document.getElementById('text1-4').value}`;
+  document.getElementById('class2-1').innerText = `Add ${document.getElementById('text2-1').value}`;
+  document.getElementById('class2-2').innerText = `Add ${document.getElementById('text2-2').value}`;
+  document.getElementById('class2-3').innerText = `Add ${document.getElementById('text2-3').value}`;
+  document.getElementById('class2-4').innerText = `Add ${document.getElementById('text2-4').value}`;
+  document.getElementById('class3-1').innerText = `Add ${document.getElementById('text3-1').value}`;
+  document.getElementById('class3-2').innerText = `Add ${document.getElementById('text3-2').value}`;
+  document.getElementById('class3-3').innerText = `Add ${document.getElementById('text3-3').value}`;
+  document.getElementById('class3-4').innerText = `Add ${document.getElementById('text3-4').value}`;
 }
 
 function addClickListeners(addExample) { // While clicking a button, add an example every .1 second for that class.
@@ -82,18 +82,18 @@ function addClickListeners(addExample) { // While clicking a button, add an exam
     element.addEventListener('mouseup', () => {console.log(`released ${className}`); clearInterval(buttonDown)});
     element.addEventListener('mouseout', () => {console.log(`released ${className}`); clearInterval(buttonDown)});
   }
-  createListener('class1A', 0);
-  createListener('class1B', 1);
-  createListener('class1C', 2);
-  createListener('class1D', 3);
-  createListener('class2A', 4);
-  createListener('class2B', 5);
-  createListener('class2C', 6);
-  createListener('class2D', 7);
-  createListener('class3A', 8);
-  createListener('class3B', 9);
-  createListener('class3C', 10);
-  createListener('class3D', 11);
+  createListener('class1-1', 0);
+  createListener('class1-2', 1);
+  createListener('class1-3', 2);
+  createListener('class1-4', 3);
+  createListener('class2-1', 4);
+  createListener('class2-2', 5);
+  createListener('class2-3', 6);
+  createListener('class2-4', 7);
+  createListener('class3-1', 8);
+  createListener('class3-2', 9);
+  createListener('class3-3', 10);
+  createListener('class3-4', 11);
 }
 
 async function app() {

@@ -3,8 +3,10 @@ app = Flask(__name__)
 
 
 @app.route('/', methods=['GET'])
-def redirect_to_index():
-    return render_template('index_templates.html', message='asdf')
+@app.route('/<numOfClassOne>', methods=['GET'])
+@app.route('/<numOfClassOne>/<numOfClassTwo>', methods=['GET'])
+def redirect_to_index(numOfClassOne=4, numOfClassTwo=4):
+    return render_template('index_templates.html', numOfClassOne=numOfClassOne, numOfClassTwo=numOfClassTwo)
 
 @app.route('/basic_calc/<a>/<b>')
 def do_calc(a,b):

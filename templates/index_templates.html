@@ -9,10 +9,10 @@
 {% macro buttonPanel(buttonGroupNumber) -%}
   <div id="buttonPanel">
     <p>Add classes in order, A initilizes the classes</p>
-    {{ buttonNameLabelText('A', buttonGroupNumber) }}
-    {{ buttonNameLabelText('B', buttonGroupNumber) }}
-    {{ buttonNameLabelText('C', buttonGroupNumber) }}
-    {{ buttonNameLabelText('D', buttonGroupNumber) }}
+    {{ buttonNameLabelText(1, buttonGroupNumber) }}
+    {{ buttonNameLabelText(2, buttonGroupNumber) }}
+    {{ buttonNameLabelText(3, buttonGroupNumber) }}
+    {{ buttonNameLabelText(4, buttonGroupNumber) }}
   </div>
 {%- endmacro %}
 
@@ -21,11 +21,11 @@
   {{ buttonPanel(consoleNumber ) }}
 {%- endmacro %}
 
-{% macro buttonNameLabelText(postfixLetter, buttonGroupNumber) -%}
-  <div id="buttonset{{buttonGroupNumber}}{{postfixLetter}}">
-    <input id="text{{buttonGroupNumber}}{{postfixLetter}}" size="5" value="{{postfixLetter}}"></input>
-    <button id="class{{buttonGroupNumber}}{{postfixLetter}}">Add {{postfixLetter}}</button>
-    <label id="label{{buttonGroupNumber}}{{postfixLetter}}"></label>
+{% macro buttonNameLabelText(postfixNumber, buttonGroupNumber) -%}
+  <div id="buttonset{{buttonGroupNumber}}-{{postfixNumber}}">
+    <input id="text{{buttonGroupNumber}}-{{postfixNumber}}" size="5" value="{{postfixNumber}}"></input>
+    <button id="class{{buttonGroupNumber}}-{{postfixNumber}}">Add {{postfixLetter}}</button>
+    <label id="label{{buttonGroupNumber}}-{{postfixNumber}}"></label>
   </div>
 {%- endmacro %}
 
