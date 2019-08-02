@@ -16,8 +16,6 @@ This is heavily based off of the teachable machine Google tool, however simplifi
 
 - [ ] Fix the load button, currently we can save out to a file, however loading the file does not currently work due to an error.
   - The error is likely something to do with the location of the file when uploaded.
-- [ ] Create a better way to index the labels and text
-  - Potentially use a loop over some variables
 
 ## Done
 
@@ -26,3 +24,5 @@ This is heavily based off of the teachable machine Google tool, however simplifi
   - This will be the base for the overall solution
 - [x] Migrate application to a flask service
   - This will allow us to serve the application on something like heroku easily in the future
+- [x] Create a better way to index the labels and text
+  - Potentially use a loop over some variables
