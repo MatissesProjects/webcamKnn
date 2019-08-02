@@ -4,9 +4,7 @@ const imageClassifier2 = knnClassifier.create();
 const classifier3 = knnClassifier.create();
 let net;
 let buttonDown;
-let countOfClassImages = [0, 0, 0, 0,
-                          0, 0, 0, 0,
-                          0, 0, 0, 0];
+let countOfClassImages = [];
 
 const imagesPerSecond = 10;
 const DELAY_TIME = 1000 / imagesPerSecond;
@@ -31,10 +29,11 @@ async function setupWebcam() {
 }
 
 async function updateClassifierConsole(classifier, consoleNumber, activation) {
+  let numberOfClassifierClasses = document.getElementById(`numberOfClassifier${consoleNumber}Classes`).innerText;
+  let classNames = [];
   if (classifier.getNumClasses() > 0) {
     const result = await classifier.predictClass(activation);
-    const classNames = [document.getElementById(`text${consoleNumber}-1`).value, document.getElementById(`text${consoleNumber}-2`).value,
-                        document.getElementById(`text${consoleNumber}-3`).value, document.getElementById(`text${consoleNumber}-4`).value];
+    for( let i=0; i < numberOfClassifierClasses; ++i) { classNames.push(document.getElementById(`text${consoleNumber}-${i+1}`).value); }
     document.getElementById(`console${consoleNumber}`).innerText = `
       prediction: ${classNames[parseInt(result.label)]}\n
       probability: ${result.confidences[parseInt(result.label)]}
@@ -46,33 +45,36 @@ async function updateClassifierConsole(classifier, consoleNumber, activation) {
 }
 
 function updateCountOfClassExamples() {
-  document.getElementById('label1-1').innerText = countOfClassImages[0];
-  document.getElementById('label1-2').innerText = countOfClassImages[1];
-  document.getElementById('label1-3').innerText = countOfClassImages[2];
-  document.getElementById('label1-4').innerText = countOfClassImages[3];
-  document.getElementById('label2-1').innerText = countOfClassImages[4];
-  document.getElementById('label2-2').innerText = countOfClassImages[5];
-  document.getElementById('label2-3').innerText = countOfClassImages[6];
-  document.getElementById('label2-4').innerText = countOfClassImages[7];
-  document.getElementById('label3-1').innerText = countOfClassImages[8];
-  document.getElementById('label3-2').innerText = countOfClassImages[9];
-  document.getElementById('label3-3').innerText = countOfClassImages[10];
-  document.getElementById('label3-4').innerText = countOfClassImages[11];
+  let numberOfClassifier1Classes = parseInt(document.getElementById('numberOfClassifier1Classes').innerText);
+  let numberOfClassifier2Classes = parseInt(document.getElementById('numberOfClassifier2Classes').innerText);
+  let numberOfClassifier3Classes = parseInt(document.getElementById('numberOfClassifier3Classes').innerText);
+  for (let i = 0; i < numberOfClassifier1Classes; i++) {
+    document.getElementById(`label1-${i+1}`).innerText = countOfClassImages[i];
+  }
+  for (let i = 0; i < numberOfClassifier2Classes; i++) {
+    document.getElementById(`label2-${i+1}`).innerText = countOfClassImages[i+numberOfClassifier1Classes];
+  }
+  for (let i = 0; i < numberOfClassifier3Classes; i++) {
+    document.getElementById(`label3-${i+1}`).innerText = countOfClassImages[i+numberOfClassifier1Classes+numberOfClassifier2Classes];
+  }
 }
 
 function updateButtonNames() {
-  document.getElementById('class1-1').innerText = `Add ${document.getElementById('text1-1').value}`;
-  document.getElementById('class1-2').innerText = `Add ${document.getElementById('text1-2').value}`;
-  document.getElementById('class1-3').innerText = `Add ${document.getElementById('text1-3').value}`;
-  document.getElementById('class1-4').innerText = `Add ${document.getElementById('text1-4').value}`;
-  document.getElementById('class2-1').innerText = `Add ${document.getElementById('text2-1').value}`;
-  document.getElementById('class2-2').innerText = `Add ${document.getElementById('text2-2').value}`;
-  document.getElementById('class2-3').innerText = `Add ${document.getElementById('text2-3').value}`;
-  document.getElementById('class2-4').innerText = `Add ${document.getElementById('text2-4').value}`;
-  document.getElementById('class3-1').innerText = `Add ${document.getElementById('text3-1').value}`;
-  document.getElementById('class3-2').innerText = `Add ${document.getElementById('text3-2').value}`;
-  document.getElementById('class3-3').innerText = `Add ${document.getElementById('text3-3').value}`;
-  document.getElementById('class3-4').innerText = `Add ${document.getElementById('text3-4').value}`;
+    let numberOfClassifier1Classes = parseInt(document.getElementById('numberOfClassifier1Classes').innerText);
+    let numberOfClassifier2Classes = parseInt(document.getElementById('numberOfClassifier2Classes').innerText);
+    let numberOfClassifier3Classes = parseInt(document.getElementById('numberOfClassifier3Classes').innerText);
+    for (let i = 0; i < numberOfClassifier1Classes; i++) {
+      let textToGrab = document.getElementById(`text1-${i+1}`).value;
+      document.getElementById(`class1-${i+1}`).innerText = `Add ${textToGrab}`;
+    }
+    for (let i = 0; i < numberOfClassifier2Classes; i++) {
+      let textToGrab = document.getElementById(`text2-${i+1}`).value;
+      document.getElementById(`class2-${i+1}`).innerText = `Add ${textToGrab}`;
+    }
+    for (let i = 0; i < numberOfClassifier3Classes; i++) {
+      let textToGrab = document.getElementById(`text3-${i+1}`).value;
+      document.getElementById(`class3-${i+1}`).innerText = `Add ${textToGrab}`;
+    }
 }
 
 function addClickListeners(addExample) { // While clicking a button, add an example every .1 second for that class.
@@ -82,18 +84,22 @@ function addClickListeners(addExample) { // While clicking a button, add an exam
     element.addEventListener('mouseup', () => {console.log(`released ${className}`); clearInterval(buttonDown)});
     element.addEventListener('mouseout', () => {console.log(`released ${className}`); clearInterval(buttonDown)});
   }
-  createListener('class1-1', 0);
-  createListener('class1-2', 1);
-  createListener('class1-3', 2);
-  createListener('class1-4', 3);
-  createListener('class2-1', 4);
-  createListener('class2-2', 5);
-  createListener('class2-3', 6);
-  createListener('class2-4', 7);
-  createListener('class3-1', 8);
-  createListener('class3-2', 9);
-  createListener('class3-3', 10);
-  createListener('class3-4', 11);
+
+  let numberOfClassifier1Classes = parseInt(document.getElementById('numberOfClassifier1Classes').innerText);
+  let numberOfClassifier2Classes = parseInt(document.getElementById('numberOfClassifier2Classes').innerText);
+  let numberOfClassifier3Classes = parseInt(document.getElementById('numberOfClassifier3Classes').innerText);
+  for (let i = 0; i < numberOfClassifier1Classes; i++) {
+    let textToGrab = document.getElementById(`text1-${i+1}`).value;
+    createListener(`class1-${i+1}`, i);
+  }
+  for (let i = 0; i < numberOfClassifier2Classes; i++) {
+    let textToGrab = document.getElementById(`text2-${i+1}`).value;
+    createListener(`class2-${i+1}`, i+numberOfClassifier1Classes);
+  }
+  for (let i = 0; i < numberOfClassifier3Classes; i++) {
+    let textToGrab = document.getElementById(`text3-${i+1}`).value;
+    createListener(`class3-${i+1}`, i+numberOfClassifier1Classes+numberOfClassifier2Classes);
+  }
 }
 
 async function app() {
@@ -105,14 +111,16 @@ async function app() {
   await setupWebcam();
   // Reads an image from the webcam and associates it with a specific class index.
   const addExample = async (classId) => {
+    let numberOfClassifier1Classes = parseInt(document.getElementById('numberOfClassifier1Classes').innerText);
+    let numberOfClassifier2Classes = parseInt(document.getElementById('numberOfClassifier2Classes').innerText);
     countOfClassImages[classId]++; // for each image captured keep count so we can display
     const activation = net.infer(webcamElement, 'conv_preds');
-    if(classId<4){ console.log('added to classifier1');imageClassifier1.addExample(activation, classId); } // Pass the intermediate activation to the classifier.
-    if(classId>=4 && classId<8) { console.log('added to classifier2');imageClassifier2.addExample(activation, classId-4); } // Pass the intermediate activation to the classifier.
-    if(classId>=8) {
+    if(classId<numberOfClassifier1Classes){ console.log('added to classifier1');imageClassifier1.addExample(activation, classId); } // Pass the intermediate activation to the classifier.
+    if(classId>=numberOfClassifier1Classes && classId<numberOfClassifier2Classes+numberOfClassifier1Classes) { console.log('added to classifier2');imageClassifier2.addExample(activation, classId-numberOfClassifier1Classes); } // Pass the intermediate activation to the classifier.
+    if(classId>=numberOfClassifier2Classes+numberOfClassifier1Classes) {
       results1 = await updateClassifierConsole(imageClassifier1, '1', activation);
       results2 = await updateClassifierConsole(imageClassifier2, '2', activation);
-      classifier3.addExample(tf.tensor([results1, results2]), classId-8);
+      classifier3.addExample(tf.tensor([results1, results2]), classId-numberOfClassifier2Classes-numberOfClassifier1Classes);
     }
     updateCountOfClassExamples();
     // console.log(`added ${classId} ${activation}`);
@@ -121,6 +129,7 @@ async function app() {
   while (true) {
     if(!listenersAdded){
       addClickListeners(addExample);
+      initilizeClassCount();
       document.getElementById('saveButton').addEventListener('click', () => {save();});
       document.getElementById('loadButton').addEventListener('click', () => {load();});
       listenersAdded = true;
@@ -132,6 +141,14 @@ async function app() {
     updateButtonNames();
     await tf.nextFrame();
   }
+}
+
+function initilizeClassCount() {
+  let numberOfClassifier1Classes = parseInt(document.getElementById('numberOfClassifier1Classes').innerText);
+  let numberOfClassifier2Classes = parseInt(document.getElementById('numberOfClassifier2Classes').innerText);
+  let numberOfClassifier3Classes = parseInt(document.getElementById('numberOfClassifier3Classes').innerText);
+
+  countOfClassImages= Array(numberOfClassifier1Classes + numberOfClassifier2Classes + numberOfClassifier3Classes).fill(0);
 }
 
 function save() {

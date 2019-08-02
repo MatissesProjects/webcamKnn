@@ -11,10 +11,10 @@
     <video autoplay playsinline muted id="webcam" width="224" height="224"></video>
     <div id="TopLevelKnns" width=100%>
       <div id="thereNotThere" style="width:350px; display: table-cell;">
-        {{ knnConsole(1) }}
+        {{ knnConsole(1, numOfClassOne) }}
       </div>
       <div id="dayNight" style="display:table-cell;">
-        {{ knnConsole(2) }}
+        {{ knnConsole(2, numOfClassTwo) }}
       </div>
     </div>
 
@@ -22,7 +22,7 @@
       <br />
       {{ simpleUsageDescription() }}
       <div id="comboKnnConsole">
-        {{ knnConsole(3) }}
+        {{ knnConsole(3, numOfClassThree) }}
       </div>
       <br />
     </div>
@@ -34,6 +34,8 @@
     </div>
     <p style="display: none;" id="numberOfClassifier1Classes">{{ numOfClassOne }}</p>
     <p style="display: none;" id="numberOfClassifier2Classes">{{ numOfClassTwo }}</p>
+    <p style="display: none;" id="numberOfClassifier3Classes">{{ numOfClassThree }}</p>
+
     <!-- Load index.js after the content of the page -->
     <script src="../static/index.js"></script>
   </body>

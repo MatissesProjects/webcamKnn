@@ -6,19 +6,18 @@
   </div>
 {%- endmacro %}
 
-{% macro buttonPanel(buttonGroupNumber) -%}
+{% macro buttonPanel(buttonGroupNumber, numberOfClasses) -%}
   <div id="buttonPanel">
     <p>Add classes in order, A initilizes the classes</p>
-    {{ buttonNameLabelText(1, buttonGroupNumber) }}
-    {{ buttonNameLabelText(2, buttonGroupNumber) }}
-    {{ buttonNameLabelText(3, buttonGroupNumber) }}
-    {{ buttonNameLabelText(4, buttonGroupNumber) }}
+    {% for buttonIndex in range(1, 1+numberOfClasses|int) %}
+      {{ buttonNameLabelText(buttonIndex, buttonGroupNumber) }}
+      {% endfor %}
   </div>
 {%- endmacro %}
 
-{% macro knnConsole(consoleNumber) -%}
+{% macro knnConsole(consoleNumber, numberOfClassesFromURI=4) -%}
   {{ console(consoleNumber) }}
-  {{ buttonPanel(consoleNumber ) }}
+  {{ buttonPanel(consoleNumber, numberOfClassesFromURI) }}
 {%- endmacro %}
 
 {% macro buttonNameLabelText(postfixNumber, buttonGroupNumber) -%}
