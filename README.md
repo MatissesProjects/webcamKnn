@@ -6,6 +6,10 @@ Base project for using the webcam and running the results through mobileNet, and
 
 This is the base for the class project there/not there, and light/dark sensor.
 
+# How to use
+
+Clone the repo, and run `basicFlaskApp.py`
+after this go to localhost:5000 and you should get a prompt for using your webcam.
 
 ## Base of this project
 
