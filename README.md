@@ -14,8 +14,9 @@ This is heavily based off of the teachable machine Google tool, however simplifi
 
 ## TODO
 
-- [ ] Fix the load button, currently we can save out to a file, however loading the file does not currently work due to an error.
-  - The error is likely something to do with the location of the file when uploaded.
+- [ ] Fix the load button
+- [ ] Fix the save button
+  - both of these buttons need to have all three classifiers so they can properly read and write the data from/to file
 
 ## Done
 
