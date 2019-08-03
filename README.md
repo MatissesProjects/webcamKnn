@@ -9,7 +9,13 @@ This is the base for the class project there/not there, and light/dark sensor.
 # How to use
 
 Clone the repo, and run `basicFlaskApp.py`
-after this go to localhost:5000 and you should get a prompt for using your webcam.
+after this go to `localhost:5000` and you should get a prompt for using your webcam.
+
+For extra customization you can add some path arguments example
+
+`http://localhost:5000/?numOfClassOne=2&numOfClassTwo=5&numOfClassThree=3`
+
+`http://localhost:5000/?numOfClassTwo=2`
 
 ## Base of this project
 
