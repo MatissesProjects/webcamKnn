@@ -11,6 +11,14 @@ This is the base for the class project there/not there, and light/dark sensor.
 Clone the repo, and run `basicFlaskApp.py`
 after this go to localhost:5000 and you should get a prompt for using your webcam.
 
+# Requirements
+
+Requires flask
+
+pip installing that should pull all required dependencies 
+
+Either python 2 or 3 should work for this project
+
 ## Base of this project
 
 This is heavily based off of the teachable machine Google tool, however simplified for easy addition to personal projects.
