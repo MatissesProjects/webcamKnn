@@ -1,31 +1,55 @@
+// 'database'
 const webcamElement = document.getElementById('webcam');
+
+// classifiers
+let mobileNet;
 const imageClassifier1 = knnClassifier.create();
 const imageClassifier2 = knnClassifier.create();
-const classifier3 = knnClassifier.create();
-let net;
-let buttonDown;
-let countOfClassImages = [];
+const classifierClassifier = knnClassifier.create();
 
+// output vars
+let classCount = [];
+
+// input to 'database' settings
+let buttonDown;
 const imagesPerSecond = 10;
 const DELAY_TIME = 1000 / imagesPerSecond;
 
-async function setupWebcam() {
-  return new Promise((resolve, reject) => {
-    const navigatorAny = navigator;
-    navigator.getUserMedia = navigator.getUserMedia || navigatorAny.webkitGetUserMedia ||
-                             navigatorAny.mozGetUserMedia || navigatorAny.msGetUserMedia;
-    if (navigator.getUserMedia) {
-      navigator.getUserMedia({video: true},
-        stream => {
-          webcamElement.srcObject = stream;
-          webcamElement.addEventListener('loadeddata',  () => resolve(), false);
-        },
-        error => reject()
-      );
-    } else {
-      reject();
-    }
-  });
+// number of classifiers passed from Flask, in the html hidden
+const numberOfClassifier1Classes = parseInt(document.getElementById('numberOfClassifier1Classes').innerText);
+const numberOfClassifier2Classes = parseInt(document.getElementById('numberOfClassifier2Classes').innerText);
+const numberOfClassifier3Classes = parseInt(document.getElementById('numberOfClassifier3Classes').innerText);
+
+async function initializeComponents(addExample) {
+  await initializationWebcam();
+  initializeClassCount();
+  addCustomClickListeners(addExample);
+  document.getElementById('saveButton').addEventListener('click', () => {save();});
+  document.getElementById('loadButton').addEventListener('click', () => {load();});
+
+  // internal to upper function because this is never looked at outside of initialization, so hide it
+  async function initializationWebcam() {
+    return new Promise((resolve, reject) => {
+      const navigatorAny = navigator;
+      navigator.getUserMedia = navigator.getUserMedia || navigatorAny.webkitGetUserMedia ||
+                               navigatorAny.mozGetUserMedia || navigatorAny.msGetUserMedia;
+      if (navigator.getUserMedia) {
+        navigator.getUserMedia({video: true},
+          stream => {
+            webcamElement.srcObject = stream;
+            webcamElement.addEventListener('loadeddata',  () => resolve(), false);
+          },
+          error => reject()
+        );
+      } else {
+        reject();
+      }
+    });
+  }
+  // internal to upper function because this is never looked at outside of initialization, so hide it
+  function initializeClassCount() {
+    classCount = Array(numberOfClassifier1Classes + numberOfClassifier2Classes + numberOfClassifier3Classes).fill(0);
+  }
 }
 
 async function updateClassifierConsole(classifier, consoleNumber, activation) {
@@ -45,24 +69,18 @@ async function updateClassifierConsole(classifier, consoleNumber, activation) {
 }
 
 function updateCountOfClassExamples() {
-  let numberOfClassifier1Classes = parseInt(document.getElementById('numberOfClassifier1Classes').innerText);
-  let numberOfClassifier2Classes = parseInt(document.getElementById('numberOfClassifier2Classes').innerText);
-  let numberOfClassifier3Classes = parseInt(document.getElementById('numberOfClassifier3Classes').innerText);
   for (let i = 0; i < numberOfClassifier1Classes; i++) {
-    document.getElementById(`label1-${i+1}`).innerText = countOfClassImages[i];
+    document.getElementById(`label1-${i+1}`).innerText = classCount[i];
   }
   for (let i = 0; i < numberOfClassifier2Classes; i++) {
-    document.getElementById(`label2-${i+1}`).innerText = countOfClassImages[i+numberOfClassifier1Classes];
+    document.getElementById(`label2-${i+1}`).innerText = classCount[i+numberOfClassifier1Classes];
   }
   for (let i = 0; i < numberOfClassifier3Classes; i++) {
-    document.getElementById(`label3-${i+1}`).innerText = countOfClassImages[i+numberOfClassifier1Classes+numberOfClassifier2Classes];
+    document.getElementById(`label3-${i+1}`).innerText = classCount[i+numberOfClassifier1Classes+numberOfClassifier2Classes];
   }
 }
 
 function updateButtonNames() {
-    let numberOfClassifier1Classes = parseInt(document.getElementById('numberOfClassifier1Classes').innerText);
-    let numberOfClassifier2Classes = parseInt(document.getElementById('numberOfClassifier2Classes').innerText);
-    let numberOfClassifier3Classes = parseInt(document.getElementById('numberOfClassifier3Classes').innerText);
     for (let i = 0; i < numberOfClassifier1Classes; i++) {
       let textToGrab = document.getElementById(`text1-${i+1}`).value;
       document.getElementById(`class1-${i+1}`).innerText = `Add ${textToGrab}`;
@@ -77,7 +95,7 @@ function updateButtonNames() {
     }
 }
 
-function addClickListeners(addExample) { // While clicking a button, add an example every .1 second for that class.
+function addCustomClickListeners(addExample) { // While clicking a button, add an example every .1 second for that class.
   const createListener = (className, classLabelNumber) => {
     const element = document.getElementById(className);
     element.addEventListener('mousedown', () => {buttonDown = setInterval(() => {addExample(classLabelNumber);}, DELAY_TIME);});
@@ -85,9 +103,6 @@ function addClickListeners(addExample) { // While clicking a button, add an exam
     element.addEventListener('mouseout', () => {console.log(`released ${className}`); clearInterval(buttonDown)});
   }
 
-  let numberOfClassifier1Classes = parseInt(document.getElementById('numberOfClassifier1Classes').innerText);
-  let numberOfClassifier2Classes = parseInt(document.getElementById('numberOfClassifier2Classes').innerText);
-  let numberOfClassifier3Classes = parseInt(document.getElementById('numberOfClassifier3Classes').innerText);
   for (let i = 0; i < numberOfClassifier1Classes; i++) {
     let textToGrab = document.getElementById(`text1-${i+1}`).value;
     createListener(`class1-${i+1}`, i);
@@ -104,57 +119,46 @@ function addClickListeners(addExample) { // While clicking a button, add an exam
 
 async function app() {
   console.log('Loading mobilenet..');
-  net = await mobilenet.load();
+  mobileNet = await mobilenet.load();
   console.log('Sucessfully loaded model');
-  let listenersAdded = false;
 
-  await setupWebcam();
   // Reads an image from the webcam and associates it with a specific class index.
   const addExample = async (classId) => {
-    let numberOfClassifier1Classes = parseInt(document.getElementById('numberOfClassifier1Classes').innerText);
-    let numberOfClassifier2Classes = parseInt(document.getElementById('numberOfClassifier2Classes').innerText);
-    countOfClassImages[classId]++; // for each image captured keep count so we can display
-    const activation = net.infer(webcamElement, 'conv_preds');
-    if(classId<numberOfClassifier1Classes){ console.log('added to classifier1');imageClassifier1.addExample(activation, classId); } // Pass the intermediate activation to the classifier.
-    if(classId>=numberOfClassifier1Classes && classId<numberOfClassifier2Classes+numberOfClassifier1Classes) { console.log('added to classifier2');imageClassifier2.addExample(activation, classId-numberOfClassifier1Classes); } // Pass the intermediate activation to the classifier.
+    classCount[classId]++; // for each image captured keep count so we can display
+    const activation = mobileNet.infer(webcamElement, 'conv_preds');
+    if(classId<numberOfClassifier1Classes) {
+      imageClassifier1.addExample(activation, classId);
+      console.log('added to classifier1');
+    }
+    if(classId>=numberOfClassifier1Classes && classId<numberOfClassifier2Classes+numberOfClassifier1Classes) {
+      imageClassifier2.addExample(activation, classId-numberOfClassifier1Classes);
+      console.log('added to classifier2');
+    }
     if(classId>=numberOfClassifier2Classes+numberOfClassifier1Classes) {
       results1 = await updateClassifierConsole(imageClassifier1, '1', activation);
       results2 = await updateClassifierConsole(imageClassifier2, '2', activation);
-      classifier3.addExample(tf.tensor([results1, results2]), classId-numberOfClassifier2Classes-numberOfClassifier1Classes);
+      classifierClassifier.addExample(tf.tensor([results1, results2]), classId-numberOfClassifier2Classes-numberOfClassifier1Classes);
+      console.log('added to classifier3');
     }
     updateCountOfClassExamples();
     // console.log(`added ${classId} ${activation}`);
   };
+  initializeComponents(addExample);
 
   while (true) {
-    if(!listenersAdded){
-      addClickListeners(addExample);
-      initilizeClassCount();
-      document.getElementById('saveButton').addEventListener('click', () => {save();});
-      document.getElementById('loadButton').addEventListener('click', () => {load();});
-      listenersAdded = true;
-    }
-    const webcamActivation = net.infer(webcamElement, 'conv_preds'); // Get the activation from mobilenet from the webcam.
+    const webcamActivation = mobileNet.infer(webcamElement, 'conv_preds');
     results1 = await updateClassifierConsole(imageClassifier1, '1', webcamActivation);
     results2 = await updateClassifierConsole(imageClassifier2, '2', webcamActivation);
-    updateClassifierConsole(classifier3, '3', tf.tensor([results1, results2]));
+    updateClassifierConsole(classifierClassifier, '3', tf.tensor([results1, results2]));
     updateButtonNames();
     await tf.nextFrame();
   }
 }
 
-function initilizeClassCount() {
-  let numberOfClassifier1Classes = parseInt(document.getElementById('numberOfClassifier1Classes').innerText);
-  let numberOfClassifier2Classes = parseInt(document.getElementById('numberOfClassifier2Classes').innerText);
-  let numberOfClassifier3Classes = parseInt(document.getElementById('numberOfClassifier3Classes').innerText);
-
-  countOfClassImages= Array(numberOfClassifier1Classes + numberOfClassifier2Classes + numberOfClassifier3Classes).fill(0);
-}
-
 function save() {
   let dataset1 = imageClassifier1.getClassifierDataset()
   let dataset2 = imageClassifier2.getClassifierDataset() // TODO: ADD
-  let dataset3 = classifier3.getClassifierDataset() // TODO: ADD
+  let dataset3 = classifierClassifier.getClassifierDataset() // TODO: ADD
   let datasetObj = Object.keys(dataset1).map((key) => {
      let data = dataset[key].dataSync();
      // use Array.from() so when JSON.stringify() it covert to an array string e.g [0.1,-0.2...]
