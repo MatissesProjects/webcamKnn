@@ -17,6 +17,14 @@ For extra customization you can add some path arguments example
 
 `http://localhost:5000/?numOfClassTwo=2`
 
+# Requirements
+
+Requires flask
+
+pip installing that should pull all required dependencies 
+
+Either python 2 or 3 should work for this project
+
 ## Base of this project
 
 This is heavily based off of the teachable machine Google tool, however simplified for easy addition to personal projects.
