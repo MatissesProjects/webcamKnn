@@ -121,11 +121,14 @@ async function app() {
   console.log('Loading mobilenet..');
   mobileNet = await mobilenet.load();
   console.log('Sucessfully loaded model');
+  const webcam = await tf.data.webcam(webcamElement);
 
   // Reads an image from the webcam and associates it with a specific class index.
   const addExample = async (classId) => {
+    const img = await webcam.capture();
+    const activation = mobileNet.infer(img, 'conv_preds');
     classCount[classId]++; // for each image captured keep count so we can display
-    const activation = mobileNet.infer(webcamElement, 'conv_preds');
+
     if(classId<numberOfClassifier1Classes) {
       imageClassifier1.addExample(activation, classId);
       console.log('added to classifier1');
@@ -140,17 +143,25 @@ async function app() {
       classifierClassifier.addExample(tf.tensor([results1, results2]), classId-numberOfClassifier2Classes-numberOfClassifier1Classes);
       console.log('added to classifier3');
     }
+
     updateCountOfClassExamples();
+
+    img.dispose();
     // console.log(`added ${classId} ${activation}`);
   };
   initializeComponents(addExample);
 
   while (true) {
-    const webcamActivation = mobileNet.infer(webcamElement, 'conv_preds');
-    results1 = await updateClassifierConsole(imageClassifier1, '1', webcamActivation);
-    results2 = await updateClassifierConsole(imageClassifier2, '2', webcamActivation);
-    updateClassifierConsole(classifierClassifier, '3', tf.tensor([results1, results2]));
-    updateButtonNames();
+    if (imageClassifier1.getNumClasses() > 0) {
+      const img = await webcam.capture();
+      const webcamActivation = mobileNet.infer(img, 'conv_preds');
+      results1 = await updateClassifierConsole(imageClassifier1, '1', webcamActivation);
+      results2 = await updateClassifierConsole(imageClassifier2, '2', webcamActivation);
+      updateClassifierConsole(classifierClassifier, '3', tf.tensor([results1, results2]));
+      updateButtonNames();
+
+      img.dispose();
+    }
     await tf.nextFrame();
   }
 }
