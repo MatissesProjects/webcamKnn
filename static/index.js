@@ -119,7 +119,7 @@ function addCustomClickListeners(addExample) { // While clicking a button, add a
 
 async function app() {
   console.log('Loading mobilenet..');
-  mobileNet = await mobilenet.load();
+  mobileNet = await mobilenet.load({'version': 2, 'alpha': 1});
   console.log('Sucessfully loaded model');
   const webcam = await tf.data.webcam(webcamElement);
 
